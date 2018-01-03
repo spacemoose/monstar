@@ -10,12 +10,16 @@ A C++ library for MONitoring an application and sending data to grafana to gener
 
 ** Use Cases
 
+   The easiest way to get started with MONSTAR is probably to work
+   through the examples in the examples directory.
+
    Monstar currently supports three use cases:
 
    - In instant simple numeric information in Graphite.
    - In instant scope benchmarking.
    - Event based message transation to time-series data.  This
      currently only supports Elasticsearch data.
+
 
    The tutorial section below gives examples of implementing these
    three use cases.
