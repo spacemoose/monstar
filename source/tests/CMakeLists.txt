@@ -1,0 +1,4 @@
+add_executable(silly_example 0_silly_example.cpp)
+add_executable(less_silly  1_less_silly.cpp)
+target_link_libraries(silly_example pthread monstar)
+target_link_libraries(less_silly pthread monstar)

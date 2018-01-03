@@ -1,0 +1,28 @@
+Language: Cpp
+BasedOnStyle: Mozilla
+
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+
+BinPackArguments: false
+BinPackParameters: false
+
+ColumnLimit: 95
+Cpp11BracedListStyle: true
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: ForIndentation
+
+SortIncludes: true
+
+BreakBeforeBraces: Linux
+
+# Not available until clang-format 5.
+# FixNamespaceComments: true

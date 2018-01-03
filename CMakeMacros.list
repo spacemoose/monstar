@@ -1,0 +1,24 @@
+# Some useful CMake macros
+
+
+# This adds sources
+macro (add_sources SOURCES)
+    file (RELATIVE_PATH _relPath "${PROJECT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+    foreach (_src ${ARGN})
+        if (_relPath)
+            list (APPEND SRCS "${_relPath}/${_src}")
+        else()
+            list (APPEND SRCS "${_src}")
+        endif()
+    endforeach()
+    if (_relPath)
+        # propagate SRCS to parent directory
+        set (SRCS ${SRCS} PARENT_SCOPE)
+    endif()
+endmacro()
+
+add_sources(main.cpp)
+add_subdirectory(dir1)
+add_subdirectory(dir2)
+
+message(STATUS "${SRCS}")
