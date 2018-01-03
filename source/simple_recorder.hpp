@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 
+#include <iostream>
+
 namespace monstar {
 namespace detail {
 
@@ -15,14 +17,13 @@ class simple_recorder
 {
   public:
 	/// a single recorder is used to record a single value.
-	/// @todo Configuration!
 	simple_recorder(std::string metric_name)
-	  : m_metric_name("." + metric_name)
+	  : m_metric_path(graphite_poster::get_prefix() + "." + metric_name)
 	{
 	}
 
 	simple_recorder(const simple_recorder& gr)
-	  : m_metric_name(gr.m_metric_name)
+	  : m_metric_path(gr.m_metric_path)
 	{
 
 	}
@@ -34,17 +35,19 @@ class simple_recorder
 	/// recorded with an identical timestamp.
 	void operator()(int secs_since_epoch, double val)
 	{
+	  std::cout << m_metric_path << std::endl;
 		m_msg.str("");
-		m_msg << m_metric_name << " " << val << " " << secs_since_epoch << "\n";
+		m_msg << m_metric_path << " " << val << " " << secs_since_epoch << "\n";
 		m_poster(m_msg.str());
 	}
 
-	const std::string m_metric_name;
+    /// The path to the metric.  Must contain metric name, rest is up to caller.
+	const std::string m_metric_path;
 
   private:
-	/// @todo get from configuration.
+
 	/// @todo single carbon connection, batch posting.
-		graphite_poster m_poster;
+    graphite_poster m_poster;
 	std::stringstream m_msg;
 };
 }

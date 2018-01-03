@@ -45,7 +45,7 @@ class graphite_poster
 		graphite_port = std::to_string(port);
 	}
 	static void set_prefix(std::string pre) { prefix = pre; }
-
+    static std::string get_prefix() {return prefix;}
   private:
 	basio::io_service m_ios;
 	btcp::socket m_sock{m_ios};
