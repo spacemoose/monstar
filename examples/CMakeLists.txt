@@ -1,3 +1,4 @@
+include_directories("${CMAKE_SOURCE_DIR}/source")
 add_executable(silly_example 0_silly_example.cpp)
 add_executable(less_silly  1_less_silly.cpp)
 target_link_libraries(silly_example pthread monstar)
