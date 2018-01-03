@@ -44,21 +44,21 @@ void configure_monitoring(int period)
 /// Our first step is to create a data mapping for elasticsearch.  The
 /// following can be copy pasted (minus the '\' escape character
 /// before the '@') into kibana to define the mapping in the
-/// elasticsearch server:
+/// elasticsearch server.  Alternatively you can run the
+/// 'create_test_index.py' script:
 ///
 /// PUT /foo
 /// {
-///   "mappings":
-///   { "task":
-///   { "properties":
-///   {
-///     "owner":          {"type":"keyword"},
-///     "environment":    {"type":"keyword"},
+///   "mappings": {
+///   "task":  {
+///   "properties": {
+///     "owner":           {"type":"keyword"},
+///     "environment":     {"type":"keyword"},
 ///     "\@timestamp":     {"type":"date", "format": "epoch_second"},
 ///     "\@process":       {"type":"integer"},
 ///     "\@db":            {"type":"integer"},
 ///     "\@wait":          {"type":"integer"},
-///     "status":         {"type":"keyword"}
+///     "status":          {"type":"keyword"}
 ///   }
 ///   }
 ///   }
@@ -72,7 +72,7 @@ void configure_monitoring(int period)
 ///  We'll create two 'tasks', and move them through various states.
 int main()
 {
-  	int period = 3;
+  	int period = 1;
     configure_monitoring(period);
 
 	/// Each message needs a numeric (int128) identifier so
@@ -97,7 +97,6 @@ int main()
 
 	/// both process for 2s.
 	std::this_thread::sleep_for(2s);
-
 
 	/// Both go into 'db' mode -- joes for 1s (and then finished),
 	/// while marys goes for 2.
