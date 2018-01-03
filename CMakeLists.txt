@@ -7,7 +7,7 @@ include_directories(SYSTEM /gp/share/include) # for fmt.
 
 add_definitions(-Wall)
 add_subdirectory(source)
-
+add_subdirectory(examples)
 #--------------
 # Packaging
 set (VERSION "0.01")
