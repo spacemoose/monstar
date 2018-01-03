@@ -109,7 +109,7 @@ void configure_monitoring(int period)
 int main()
 {
 
-	int period = 3;
+	int period = 1;
 	/// @todo exception handling.
 	configure_monitoring(period);
 
