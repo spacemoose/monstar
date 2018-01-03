@@ -22,7 +22,7 @@
 void configure_monitoring(int period)
 {
 	auto server_addy="127.0.0.1";
-	monstar::configure_graphite(server_addy, 2003, "test");
+	monstar::configure_graphite(server_addy, 2003, "foo.test");
 	monstar::configure_elasticsearch(server_addy, 9200, {{"environment", "test"}});
 	monstar::initialize_ts_processor(period); /// Let's send messages every second.
 	/// @todo get a signal from the initializer here, rather than just sleep.
