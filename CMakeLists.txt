@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.6)
 set (CMAKE_CXX_STANDARD 14)
-project(monstar VERSION 0.01 DESCRIPTION "A library for monitoring C++ applications in Grafana")
+project(monstar)
 
 add_definitions(-Wall)
 add_subdirectory(source)
@@ -8,14 +8,17 @@ add_subdirectory(examples)
 
 #--------------
 # Packaging
+# the next two lines can be ditched when we can count on cmake >3.6
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A library for monitoring C++ applications in Grafana")
+set(VERSION 0.01 )
 set(CPACK_GENERATOR "RPM")
 set(CPACK_PACKAGE_NAME "monstar")
 set(CPACK_RPM_PACKAGE_RELEASE 1)
 set(CPACK_RPM_PACKAGE_LICENSE "LGPL-3.0")
 set(CPACK_PACKAGE_CONTACT "Glen Stark")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/CPack.desc")
-set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${PROJECT_VERSION}.${CMAKE_SYSTEM_PROCESSOR}")
+set(CPACK_PACKAGING_INSTALL_PREFIX /usr)
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${VERSION}.${CMAKE_SYSTEM_PROCESSOR}")
 include(CPack)
 
 
