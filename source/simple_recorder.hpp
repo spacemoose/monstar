@@ -35,7 +35,6 @@ class simple_recorder
 	/// recorded with an identical timestamp.
 	void operator()(int secs_since_epoch, double val)
 	{
-	  std::cout << m_metric_path << std::endl;
 		m_msg.str("");
 		m_msg << m_metric_path << " " << val << " " << secs_since_epoch << "\n";
 		m_poster(m_msg.str());
