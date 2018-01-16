@@ -21,16 +21,16 @@ using data_t = std::map<std::string, std::string>;
 ///      - const_data and volatile_data
 ///      - move semantics
 /// @todo I think this should just be a struct.
-struct TS_message
+struct Notification
 {
   public:
-	TS_message(msg_id_t id,
+	Notification(msg_id_t id,
 	           std::string new_state,
 	           std::string es_index,
 	           std::string es_type,
 	           std::map<std::string, std::string> data);
 
-	TS_message(msg_id_t id,
+	Notification(msg_id_t id,
 	           std::string new_state,
 	           std::string es_index,
 	           std::string es_type);
@@ -46,18 +46,18 @@ struct TS_message
 
 	///  When the state is updated, we automatically update the
 	///  timestamp to now.
-	TS_message& set_state(std::string new_state);
+	Notification& set_state(std::string new_state);
 
 	/// This is intended for setting non-state data that can change
 	/// over time.  Here we don't set the timestamp.
-	TS_message& set(std::string key, std::string value)
+	Notification& set(std::string key, std::string value)
 	{
 		m_data[key] = value;
 		return *this;
 	}
 
 	/// Note that setting finished sets the timestamp.
-	TS_message& set_finished()
+	Notification& set_finished()
 	{
 		m_finished = true;
 		return *this;

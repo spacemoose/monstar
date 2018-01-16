@@ -1,12 +1,12 @@
 #pragma once
 
-#include "TS_message.hpp"
+#include "Notification.hpp"
 #include <map>
 #include <string>
 
 namespace monstar {
 
-class TS_message;
+class Notification;
 
 /// Configure the Graphite server access.
 ///   @param ip The ip-address (or path) of graphite server.
@@ -33,6 +33,6 @@ void initialize_ts_processor(int period);
 /// Creates a message from the Trx, and adds it to the queue.
 ///
 /// @todo maintain a backlog in case of disconnects?
-void notify(const TS_message& msg);
+void notify(const Notification& msg);
 
 }

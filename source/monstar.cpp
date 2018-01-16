@@ -1,5 +1,5 @@
 #include "monstar.hpp"
-#include "TS_message.hpp"
+#include "Notification.hpp"
 #include "detail/TS_generator.hpp"
 #include "detail/TS_processor.hpp"
 #include <boost/uuid/uuid_generators.hpp>
@@ -98,7 +98,7 @@ void initialize_ts_processor(int period)
      - temporary timeouts.
 
 */
-void notify(const TS_message& msg)
+void notify(const Notification& msg)
 {
 	if (not ts_processor) {
 		return;

@@ -79,7 +79,7 @@ class TaskMonitor
 		return "default";
 	}
 
-	monstar::TS_message m_msg;
+	monstar::Notification m_msg;
 };
 
 void fake_it(std::string owner, int wait, int proc, int db)

@@ -7,7 +7,7 @@
 
 namespace monstar {
 
-class TS_message;
+class Notification;
 
 namespace detail {
 
@@ -29,8 +29,8 @@ class TS_generator
 
   public:
 	/// @todo move semantics
-	TS_generator(TS_message& msg);
-	void process_message(TS_message& msg);
+	TS_generator(Notification& msg);
+	void process_message(Notification& msg);
 	void send_TS_data(ES_poster& esp);
 	void update_timings(epoch::timestamp_t cur_timestamp);
 	bool finished() const { return m_finished; }
