@@ -30,7 +30,7 @@ class TS_generator
   public:
 	/// @todo move semantics
 	TS_generator(Notification& msg);
-	void process_message(Notification& msg);
+	void process_notification(Notification& msg);
 	void send_TS_data(ES_poster& esp);
 	void update_timings(epoch::timestamp_t cur_timestamp);
 	bool finished() const { return m_finished; }
