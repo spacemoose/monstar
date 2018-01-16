@@ -81,13 +81,13 @@ int main()
 
 	/// Create joe's message , starting in state "wait".
 	using namespace std::chrono_literals;
-	monstar::TS_message joes(1, "wait", "foo", "task", {{"owner", "joe"}});
+	monstar::Notification joes(1, "wait", "foo", "task", {{"owner", "joe"}});
 
 	/// The time-series processor won't see the message until it's notified.
 	monstar::notify(joes);
 
 	/// Same for mary's message, but it starts in state "process".
-	monstar::TS_message marys(2, "process", "foo", "task", {{"owner", "mary"}});
+	monstar::Notification marys(2, "process", "foo", "task", {{"owner", "mary"}});
 	monstar::notify(marys);
 
 	/// Let's pretend these tasks stay in their states for 3s until

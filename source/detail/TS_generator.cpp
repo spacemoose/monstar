@@ -1,6 +1,6 @@
 #include "TS_generator.hpp"
 #include "ES_poster.hpp"
-#include "TS_message.hpp"
+#include "Notification.hpp"
 #include "epoch.hpp"
 #include "io_ops.hpp"
 #include <iostream>
@@ -12,7 +12,7 @@ namespace monstar {
 namespace detail {
 
 /// @todo move semantics
-TS_generator::TS_generator(TS_message& msg)
+TS_generator::TS_generator(Notification& msg)
   : m_cur_state(msg.get_state())
   , m_es_index(msg.get_es_index())
   , m_es_type(msg.get_es_type())
@@ -34,7 +34,7 @@ std::ostream& operator<<(std::ostream& os, const data_t& data)
 /// This takes data from a msg, and performs all calculations so that the
 /// updateTimings method (which is called before serializing data) produces correct results.
 /// One must consider the following boundary cases to ensure corrct behavior:
-void TS_generator::process_message(TS_message& msg)
+void TS_generator::process_message(Notification& msg)
 {
 	// @todo resolve this:
 	assert(not m_finished); ///< This would certainly indicate a problem.
