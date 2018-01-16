@@ -31,17 +31,17 @@ class TS_processor
 	void process();
 
 	/// Can be called concurrently.
-	void add_message(Notification msg){m_messages.push(msg);}
+	void add_message(Notification msg){m_notifications.push(msg);}
 
   private:
-	size_t count_messages() const;
-	void process_messages(size_t numMessages);
+	size_t count_notifications() const;
+	void process_notifications(size_t numNotifications);
 	void send_TS_data();
 	void cull(); ///< Remove finished generators.
 
 	ES_poster							m_esPoster;
 	std::map<msg_id_t, TS_generator>	m_generators;
-	MPSC_queue<Notification>				m_messages;
+	MPSC_queue<Notification>			m_notifications;
 	const std::chrono::seconds			m_period; ///< @todo get from configuration.
     /// Records the time taken to execute process.
 	simple_recorder					m_proc_time_recorder;

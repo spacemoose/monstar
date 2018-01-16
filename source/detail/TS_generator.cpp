@@ -34,13 +34,13 @@ std::ostream& operator<<(std::ostream& os, const data_t& data)
 /// This takes data from a msg, and performs all calculations so that the
 /// updateTimings method (which is called before serializing data) produces correct results.
 /// One must consider the following boundary cases to ensure corrct behavior:
-void TS_generator::process_message(Notification& msg)
+void TS_generator::process_notification(Notification& msg)
 {
 	// @todo resolve this:
 	assert(not m_finished); ///< This would certainly indicate a problem.
 	if (m_finished) {
-		/// Why are we getting an update to a finished message?
-		std::cerr << "\nMONSTAR WARNING:  updating a finished message"
+		/// Why are we getting an update to a finished notification?
+		std::cerr << "\nMONSTAR WARNING:  updating a finished notification"
 		          << "\n  timestamp: " << m_last_timestamp << " :: " << msg.get_timestamp()
 		          << "\n  id:        " << m_id << " :: " << to_string(msg.get_identifier())
 		          << "\n  state:     " << m_cur_state << " :: " << msg.get_state()
@@ -54,13 +54,13 @@ void TS_generator::process_message(Notification& msg)
 }
 
 /// This updates the timings.  It might be called durings a processMsg call or prior
-/// to the TS_processor sending messages.
+/// to the TS_processor sending notifications.
 void TS_generator::update_timings(epoch::timestamp_t cur_timestamp)
 {
 	auto dt = cur_timestamp - m_last_timestamp;
 
 	// this can happen if we just missed the cutoff on the last
-	// send_ts_messages, so we set to zero and call it rounding error.
+	// send_ts_notifications, so we set to zero and call it rounding error.
 	if (cur_timestamp < m_last_timestamp) {
 		dt = 0;
 	}

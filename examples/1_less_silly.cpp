@@ -38,7 +38,7 @@ class TaskMonitor
 		monstar::notify(m_msg);
 	}
 
-	/// If the destructor is called on an unfinishd message, something
+	/// If the destructor is called on an unfinished message, something
 	/// went wrong.
 	~TaskMonitor()
 	{
