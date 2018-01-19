@@ -1,14 +1,15 @@
 #include "TS_processor.hpp"
-#include "Notification.hpp"
+#include "notification.hpp"
 #include <chrono>
 #include <iostream>
 
 namespace monstar {
 namespace detail {
 
-TS_processor::TS_processor(std::string es_server, std::string es_port, int period)
-  : m_esPoster(es_server, es_port)
-  , m_period(period)
+/// @todo I think the period handling, if we want to keep it at all,
+/// really belongs in the notification hadler.
+TS_processor::TS_processor( int period)
+  :  m_period(period)
   , m_proc_time_recorder("monstar.queue.proc_time")
   , m_queue_size_recorder("monstar.queue.size")
 {
@@ -35,7 +36,7 @@ void TS_processor::process()
 void TS_processor::send_TS_data()
 {
 	for (auto& pair : m_generators) {
-		pair.second.send_TS_data(m_esPoster);
+		pair.second.send_TS_data(m_esProvider);
 	}
 }
 

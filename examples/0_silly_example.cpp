@@ -1,4 +1,6 @@
 #include "monstar.hpp"
+#include "notification_handler.hpp"
+
 #include <chrono>
 #include <string>
 #include <thread>
@@ -18,16 +20,16 @@
 ///
 ///
 /// which means we add it to the graphite path, and initialize the
-/// elastic-search system-info.
-void configure_monitoring(int period)
+/// elastic-search system-infog.
+monstar::notification_handler setup_monitoring(int period)
 {
-	auto server_addy="127.0.0.1";
+	auto server_addy = "127.0.0.1";
 	monstar::configure_graphite(server_addy, 2003, "foo.test");
 	monstar::configure_elasticsearch(server_addy, 9200, {{"environment", "test"}});
-	monstar::initialize_ts_processor(period); /// Let's send messages every second.
-	/// @todo get a signal from the initializer here, rather than just sleep.
-	using namespace std::chrono_literals;
-	std::this_thread::sleep_for(1s);
+
+	monstar::notification_handler nh;
+	nh.start(period);
+	return nh;
 }
 
 /// This example builds up a test case that introduces the minimal
@@ -72,8 +74,12 @@ void configure_monitoring(int period)
 ///  We'll create two 'tasks', and move them through various states.
 int main()
 {
-  	int period = 1;
-    configure_monitoring(period);
+    int period =1;
+
+	// nh mustn't die before you're done notifying.
+	auto nh = setup_monitoring(period);
+
+	monstar::set_notification_handler(nh);
 
 	/// Each message needs a numeric (int128) identifier so
 	/// the TS processor knows which timeseries generator it has to
@@ -81,13 +87,13 @@ int main()
 
 	/// Create joe's message , starting in state "wait".
 	using namespace std::chrono_literals;
-	monstar::Notification joes(1, "wait", "foo", "task", {{"owner", "joe"}});
+	monstar::notification joes(1, "wait", "foo", "task", {{"owner", "joe"}});
 
 	/// The time-series processor won't see the message until it's notified.
 	monstar::notify(joes);
 
 	/// Same for mary's message, but it starts in state "process".
-	monstar::Notification marys(2, "process", "foo", "task", {{"owner", "mary"}});
+	monstar::notification marys(2, "process", "foo", "task", {{"owner", "mary"}});
 	monstar::notify(marys);
 
 	/// Let's pretend these tasks stay in their states for 3s until

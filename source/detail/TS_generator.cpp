@@ -1,6 +1,6 @@
 #include "TS_generator.hpp"
-#include "ES_poster.hpp"
-#include "Notification.hpp"
+#include "ES_provider.hpp"
+#include "notification.hpp"
 #include "epoch.hpp"
 #include "io_ops.hpp"
 #include <iostream>
@@ -12,14 +12,14 @@ namespace monstar {
 namespace detail {
 
 /// @todo move semantics
-TS_generator::TS_generator(Notification& msg)
-  : m_cur_state(msg.get_state())
-  , m_es_index(msg.get_es_index())
-  , m_es_type(msg.get_es_type())
-  , m_finished(msg.finished())
-  , m_fixed_data(msg.get_data())
-  , m_id(to_string(msg.get_identifier()))
-  , m_last_timestamp(msg.get_timestamp())
+TS_generator::TS_generator(const notification& note)
+  : m_cur_state(note.get_state())
+  , m_es_index(note.get_es_index())
+  , m_es_type(note.get_es_type())
+  , m_finished(note.finished())
+  , m_fixed_data(note.get_data())
+  , m_id(to_string(note.get_identifier()))
+  , m_last_timestamp(note.get_timestamp())
 
 {
 }
@@ -31,29 +31,29 @@ std::ostream& operator<<(std::ostream& os, const data_t& data)
 	return os;
 }
 
-/// This takes data from a msg, and performs all calculations so that the
+/// This takes data from a note, and performs all calculations so that the
 /// updateTimings method (which is called before serializing data) produces correct results.
 /// One must consider the following boundary cases to ensure corrct behavior:
-void TS_generator::process_notification(Notification& msg)
+void TS_generator::process_notification(notification& note)
 {
 	// @todo resolve this:
 	assert(not m_finished); ///< This would certainly indicate a problem.
 	if (m_finished) {
 		/// Why are we getting an update to a finished notification?
 		std::cerr << "\nMONSTAR WARNING:  updating a finished notification"
-		          << "\n  timestamp: " << m_last_timestamp << " :: " << msg.get_timestamp()
-		          << "\n  id:        " << m_id << " :: " << to_string(msg.get_identifier())
-		          << "\n  state:     " << m_cur_state << " :: " << msg.get_state()
+		          << "\n  timestamp: " << m_last_timestamp << " :: " << note.get_timestamp()
+		          << "\n  id:        " << m_id << " :: " << to_string(note.get_identifier())
+		          << "\n  state:     " << m_cur_state << " :: " << note.get_state()
 		          << "\n  data:      \n"
-		          << m_fixed_data << "\n  msg data:  \n"
-		          << msg.get_data() << std::endl;
+		          << m_fixed_data << "\n  note data:  \n"
+		          << note.get_data() << std::endl;
 	}
-	update_timings(msg.get_timestamp());
-	m_cur_state = msg.get_state();
-	m_finished = msg.finished();
+	update_timings(note.get_timestamp());
+	m_cur_state = note.get_state();
+	m_finished = note.finished();
 }
 
-/// This updates the timings.  It might be called durings a processMsg call or prior
+/// This updates the timings.  It might be called durings a process_notification call or prior
 /// to the TS_processor sending notifications.
 void TS_generator::update_timings(epoch::timestamp_t cur_timestamp)
 {
@@ -79,7 +79,7 @@ void TS_generator::update_timings(epoch::timestamp_t cur_timestamp)
 /// Send the timeseries data to monstar (elasticsearch).
 /// @todo is this the right index/type breakdown?  Maybe we want an index per machine?
 /// @todo maybe we want timestamp managed int the ts_processor?
-void TS_generator::send_TS_data(ES_poster& ep)
+void TS_generator::send_TS_data(ES_provider& ep)
 {
 	auto cur_timestamp = epoch::now();
 	update_timings(cur_timestamp);

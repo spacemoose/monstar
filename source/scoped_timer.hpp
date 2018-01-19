@@ -1,4 +1,4 @@
-#include <detail/GraphiteRecorder.hpp>
+#i
 
 /// This provides a RAII style benchmarker for recording timings in graphite.
 /// Example:
