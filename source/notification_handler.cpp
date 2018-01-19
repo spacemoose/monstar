@@ -3,6 +3,8 @@
 
 namespace monstar{
 
+notification_handler::notification_handler(){};
+
 /// This should only be called after all notifications are done.
 notification_handler::~notification_handler()
 {
