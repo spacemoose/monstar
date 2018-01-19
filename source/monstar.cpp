@@ -1,3 +1,5 @@
+#include "detail/graphite_provider.hpp"
+#include "detail/ES_provider.hpp"
 #include "monstar.hpp"
 #include "notification.hpp"
 #include "notification_handler.hpp"

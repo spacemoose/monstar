@@ -1,10 +1,13 @@
 #pragma once
 
-#include "detail/TS_processor.hpp"
 #include "notification.hpp"
 #include <thread>
 
 namespace monstar {
+
+namespace detail{
+  class TS_processor;
+}
 
 /// When first constructed, the notification_handler
 /// provides a 'null' implementation -- all notifications are
@@ -30,7 +33,7 @@ class notification_handler
 
 	void add(const notification& note);
 	~notification_handler();
-	notification_handler(){};
+	notification_handler();
 	notification_handler(notification_handler&& nh) noexcept;
 	notification_handler(const notification_handler&) = delete;
 
