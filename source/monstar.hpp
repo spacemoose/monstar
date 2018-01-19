@@ -1,12 +1,15 @@
 #pragma once
 
-#include "Notification.hpp"
+#include "notification.hpp"
 #include <map>
 #include <string>
 
 namespace monstar {
 
-class Notification;
+using es_data_t = std::map<std::string, std::string>;
+
+class notification;
+class notification_handler;
 
 /// Configure the Graphite server access.
 ///   @param ip The ip-address (or path) of graphite server.
@@ -14,25 +17,20 @@ class Notification;
 ///   @param prefix  A global prefix to be applied to all graphite posts.
 void configure_graphite(std::string ip, int port, std::string prefix);
 
-/// Configure options for the elasticsearch server.
-///  @param ip   The ip address or path to elasticsearch server.
-///  @param port The port of the elasticsearch server.
-///  @param instance_data Data to be applied to all elasticsearch
-///                       data.  This is the elasticsearch analog to
-///                       the graphite prefix argument.
-void configure_elasticsearch(std::string ip,
-                             int port,
-                             const std::map<std::string, std::string> instance_data);
+/// Configure the Elasticsearch server access.
+///   @param ip The ip-address (or path) of es server.
+///   @param port port of the es server.
+///   @param prefix  A global data set to be applied to all es entries.
+void configure_elasticsearch(std::string ip, int port, const es_data_t& instance_data);
 
-/// This must be called before any call to notify, and after
-/// configure_* methods.  It initializes the timeseries processor
-/// which receives notification and sends timeseries data to
-/// elasticsearch.
-void initialize_ts_processor(int period);
+/// The user of the library is responsible to ensure that:
+///    1.  The notification handler is set before the first call to
+///    notify (warning is printed otherwise).
+///    2.  The notification handler lives long enough to handle all
+///    notifcations.
+void set_notification_handler(notification_handler& nh);
 
-/// Creates a message from the Trx, and adds it to the queue.
-///
-/// @todo maintain a backlog in case of disconnects?
-void notify(const Notification& msg);
+/// Add a notification to the notification handler.
+void notify(const notification& msg);
 
 }

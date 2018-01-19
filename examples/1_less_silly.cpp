@@ -1,4 +1,5 @@
 #include "monstar.hpp"
+#include "notification_handler.hpp"
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -79,7 +80,7 @@ class TaskMonitor
 		return "default";
 	}
 
-	monstar::Notification m_msg;
+	monstar::notification m_msg;
 };
 
 void fake_it(std::string owner, int wait, int proc, int db)
@@ -94,16 +95,15 @@ void fake_it(std::string owner, int wait, int proc, int db)
 	tm.update(TaskMonitor::success);
 }
 
-void configure_monitoring(int period)
+
+monstar::notification_handler setup_monitoring(int period)
 {
 	auto server_addy = "127.0.0.1";
 	monstar::configure_graphite(server_addy, 2003, "foo.test");
 	monstar::configure_elasticsearch(server_addy, 9200, {{"environment", "test"}});
-	monstar::initialize_ts_processor(period); /// Let's send messages every second.
-
-	/// @todo better solution for this:
-	using namespace std::chrono_literals;
-	std::this_thread::sleep_for(1s);
+	monstar::notification_handler nh;
+	nh.start(period);
+	return nh;
 }
 
 int main()
@@ -111,7 +111,8 @@ int main()
 
 	int period = 1;
 	/// @todo exception handling.
-	configure_monitoring(period);
+	auto nh = setup_monitoring(period);
+	monstar::set_notification_handler(nh);
 
 	/// joe runs a quick task alone:
 	fake_it("joe", 1, 1, 1);

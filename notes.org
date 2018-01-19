@@ -1,0 +1,8 @@
+Some notes I don't necessarily want plastered on the gihub page, but
+feel free to read over them.
+
+* Speculation
+
+- should have a graphite_provider that handles the socket connection
+  and configuration, and can just be instantiated wherever.
+- same thing with an es_provider.

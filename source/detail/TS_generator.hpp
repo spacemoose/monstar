@@ -7,31 +7,26 @@
 
 namespace monstar {
 
-class Notification;
+class notification;
 
 namespace detail {
 
-class ES_poster;
+class ES_provider;
 
 using state_t = std::string;
 using state_timings_t = std::map<state_t, epoch::timestamp_t>;
-using es_data_t = std::map<std::string, std::string>;
 
 /// When implementing a concrete Generator, the api implementation promises the following:
-///    - processMsg will be guarenteed to be called sequentially.
-///    - processMsg may be called multiple times before sending ts data.
+///    - process_notification will be guarenteed to be called sequentially.
+///    - process_notificaiton may be called multiple times before sending ts data.
 ///    - a state may be revisited, so it should accumulate time correctly.
 class TS_generator
 {
-	friend void monstar::configure_elasticsearch(std::string,
-	                                             int,
-	                                             const monstar::detail::es_data_t);
-
   public:
 	/// @todo move semantics
-	TS_generator(Notification& msg);
-	void process_notification(Notification& msg);
-	void send_TS_data(ES_poster& esp);
+	TS_generator(const notification& note);
+	void process_notification(notification& note);
+	void send_TS_data(ES_provider& esp);
 	void update_timings(epoch::timestamp_t cur_timestamp);
 	bool finished() const { return m_finished; }
 

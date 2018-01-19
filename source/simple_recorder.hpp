@@ -1,6 +1,6 @@
 #pragma once
 
-#include "detail/graphite_poster.hpp"
+#include "detail/graphite_provider.hpp"
 #include "epoch.hpp"
 #include <sstream>
 #include <string>
@@ -18,7 +18,7 @@ class simple_recorder
   public:
 	/// a single recorder is used to record a single value.
 	simple_recorder(std::string metric_name)
-	  : m_metric_path(graphite_poster::get_prefix() + "." + metric_name)
+	  : m_metric_path(graphite_provider::get_prefix() + "." + metric_name)
 	{
 	}
 
@@ -37,7 +37,7 @@ class simple_recorder
 	{
 		m_msg.str("");
 		m_msg << m_metric_path << " " << val << " " << secs_since_epoch << "\n";
-		m_poster(m_msg.str());
+		m_provider(m_msg.str());
 	}
 
     /// The path to the metric.  Must contain metric name, rest is up to caller.
@@ -46,7 +46,7 @@ class simple_recorder
   private:
 
 	/// @todo single carbon connection, batch posting.
-    graphite_poster m_poster;
+    graphite_provider m_provider;
 	std::stringstream m_msg;
 };
 }

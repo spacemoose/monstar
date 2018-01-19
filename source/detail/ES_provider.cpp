@@ -1,4 +1,4 @@
-#include "ES_poster.hpp"
+#include "ES_provider.hpp"
 #include <iostream>
 namespace monstar {
 
@@ -6,7 +6,11 @@ namespace monstar {
 /// not part of the api, and espcially prone to change.
 namespace detail {
 
-ES_poster::ES_poster(std::string es_server, std::string es_port)
+std::string ES_provider::es_server{"127.0.0.1"};
+std::string ES_provider::es_port{"9200"};
+es_data_t ES_provider::instance_data{};
+
+ES_provider::ES_provider()
   : m_resolver(m_io_service)
   , m_socket(m_io_service)
   , m_server(es_server)
@@ -18,15 +22,14 @@ ES_poster::ES_poster(std::string es_server, std::string es_port)
 		auto endpoint = *m_resolver.resolve(query);
 		m_socket.connect(endpoint);
 	} catch (std::exception& e) {
-		throw std::runtime_error("An exception was caught while trying to establish a "
-		                         "socket conection to an elasticsearch server, with port " +
-		                         es_port + " and ip " + es_server +
-		                         ". \n The exception text was: " + e.what());
+		throw std::runtime_error(
+		  "Couldn't establish a socket conection to an elasticsearch server, with port " +
+		  es_port + " and ip " + es_server + ".   The text was: \n<" + e.what() + ">\n");
 	}
 }
 
 /// @todo batch processing.
-void ES_poster::post_message(std::string index, std::string type, const std::string message)
+void ES_provider::post_message(std::string index, std::string type, const std::string message)
 {
 	thread_local std::stringstream ss;
 	/// @todo  make a constant header.
@@ -51,7 +54,7 @@ void ES_poster::post_message(std::string index, std::string type, const std::str
 }
 
 /// @todo real error handling
-void ES_poster::process_response()
+void ES_provider::process_response()
 {
 	boost::asio::streambuf response;
 
@@ -68,8 +71,7 @@ void ES_poster::process_response()
 		std::cerr << "Invalid response " << std::endl;
 		exit(1);
 	}
-	if (status_code == 201)
-		return; // created.
+	if (status_code == 201) return; // created.
 
 	//		error handling
 	std::cerr << "Response returned with status code " << status_code << std::endl;

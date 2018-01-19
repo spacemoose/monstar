@@ -1,9 +1,9 @@
-#include "Notification.hpp"
+#include "notification.hpp"
 #include "epoch.hpp"
 
 namespace monstar {
 
-Notification::Notification(msg_id_t id,
+notification::notification(msg_id_t id,
                        std::string new_state,
                        std::string es_index,
                        std::string es_type,
@@ -18,7 +18,7 @@ Notification::Notification(msg_id_t id,
 {
 }
 
-Notification::Notification(msg_id_t id,
+notification::notification(msg_id_t id,
                        std::string new_state,
                        std::string es_index,
                        std::string es_type)
@@ -31,14 +31,14 @@ Notification::Notification(msg_id_t id,
 {
 }
 
-Notification& Notification::set_state(std::string new_state)
+notification& notification::set_state(std::string new_state)
 {
 	m_timestamp = epoch::now();
 	m_new_state = new_state;
 	return *this;
 }
 
-void Notification::set_timestamp()
+void notification::set_timestamp()
 {
 	m_timestamp = epoch::now();
 }
