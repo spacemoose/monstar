@@ -33,3 +33,9 @@ A C++ library for MONitoring an application and sending data to grafana to gener
    library, so the interface is subject to change, and there's
    probably a lot of errors and suboptimal stuff.  Feedbacck and pull
    requests are welcome!
+
+* TODO'S
+
+** TODO Make a fwd decl header.
+
+** TODO Accept streams for logging.
