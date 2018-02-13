@@ -20,7 +20,7 @@ void configure_graphite(std::string ip, int port, std::string prefix);
 /// Configure the Elasticsearch server access.
 ///   @param ip The ip-address (or path) of es server.
 ///   @param port port of the es server.
-///   @param prefix  A global data set to be applied to all es entries.
+///   @param instance_data  A global data set to be applied to all es entries.
 void configure_elasticsearch(std::string ip, int port, const es_data_t& instance_data);
 
 /// The user of the library is responsible to ensure that:
