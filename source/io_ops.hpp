@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <sstream>
 #include <ostream>
 #include <string>
 
@@ -16,8 +17,8 @@ inline std::ostream& operator<<(std::ostream& dest, __int128_t value)
 		char* d = std::end(buffer);
 		do {
 			--d;
-			*d = "0123456789"[tmp % 10];
-			tmp /= 10;
+			*d = "0123456789abcdef"[tmp % 16];
+			tmp /= 16;
 		} while (tmp != 0);
 		if (value < 0) {
 			--d;
