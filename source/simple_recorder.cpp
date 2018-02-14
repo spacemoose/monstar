@@ -7,6 +7,7 @@ namespace monstar {
 /// a single recorder is used to record a single value.
 simple_recorder::simple_recorder(std::string metric_name)
   : m_metric_path(detail::graphite_provider::get_prefix() + "." + metric_name)
+  , m_provider(std::make_unique<detail::graphite_provider>())
 {
 }
 
