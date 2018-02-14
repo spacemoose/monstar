@@ -1,10 +1,8 @@
 #pragma once
 
-#include "epoch.hpp"
-#include <iostream>
 #include <memory>
-#include <sstream>
 #include <string>
+#include <sstream>
 
 namespace monstar {
 
