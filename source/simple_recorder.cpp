@@ -1,5 +1,6 @@
 #include "simple_recorder.hpp"
 #include "detail/graphite_provider.hpp"
+#include "epoch.hpp"
 
 namespace monstar {
 
