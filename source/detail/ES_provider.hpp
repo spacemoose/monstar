@@ -15,6 +15,7 @@ namespace detail {
 
 /// Provides access to an elasticsearch instance, and the
 /// configuration information for it.
+///
 class ES_provider
 {
   public:

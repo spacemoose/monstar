@@ -3,9 +3,16 @@
 #include "monstar.hpp"
 #include "notification.hpp"
 #include "notification_handler.hpp"
+#include "epoch.hpp"
 
 #include <cassert>
 #include <iostream>
+#include <chrono>
+#include <iomanip>
+
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
+
 
 namespace monstar {
 
@@ -44,6 +51,25 @@ void notify(const notification& note)
 		std::cerr << "Called monstar::notify() before initializing the api -- ignoring."
 		          << std::endl;
 	}
+}
+
+void send_annotation(const std::string& index,
+                     const std::string& title,
+                     const std::string& text,
+                     const std::string& tags)
+{
+  using sc = std::chrono::system_clock;
+  auto tm = sc::to_time_t(sc::now());
+
+
+  std::stringstream ss;
+  ss << "\"@timestamp\" : \"" << std::put_time(std::localtime(&tm), "%Y-%m-%dT%X%z") << "\",";
+  ss << fmt::format("\"{}\" : \"{}\"", "title", title) << ",";
+  ss << fmt::format("\"{}\" : \"{}\"", "text", text) << ",";
+  ss << fmt::format("\"{}\" : \"{}\"", "tags", tags) ;
+  std::cout << ss.str() << std::endl;
+  detail::ES_provider esp;
+  esp.post_message(index, "events", ss.str());
 }
 
 } // ns monstar

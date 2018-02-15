@@ -1,6 +1,9 @@
+/// @file
+///
+/// @todo make sure forward decls are provided for all classes in public api.
+
 #pragma once
 
-#include "notification.hpp"
 #include <map>
 #include <string>
 
@@ -32,5 +35,15 @@ void set_notification_handler(notification_handler& nh);
 
 /// Add a notification to the notification handler.
 void notify(const notification& msg);
+
+/// Send an annotation event to elasticsearch.  Uses now as the timestamp.
+/// @param index the index where the event should be stored.
+/// @param title Event title.
+/// @param text  Event text.
+/// @param tags  Comman separated list of tags.
+void send_annotation(const std::string& index,
+                     const std::string& title,
+                     const std::string& text,
+                     const std::string& tags);
 
 }

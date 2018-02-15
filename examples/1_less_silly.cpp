@@ -95,7 +95,6 @@ void fake_it(std::string owner, int wait, int proc, int db)
 	tm.update(TaskMonitor::success);
 }
 
-
 monstar::notification_handler setup_monitoring(int period)
 {
 	auto server_addy = "127.0.0.1";
@@ -109,6 +108,10 @@ monstar::notification_handler setup_monitoring(int period)
 int main()
 {
 
+	monstar::send_annotation("annotations",
+	                         "less silly",
+	                         "Started a less silly example, this is the text field",
+	                         "dummy_tag,dt2");
 	int period = 1;
 	/// @todo exception handling.
 	auto nh = setup_monitoring(period);
