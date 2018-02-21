@@ -31,9 +31,9 @@ void configure_graphite(std::string ip, int port, std::string prefix)
 
 void configure_elasticsearch(std::string ip, int port, const es_data_t& instance_data)
 {
-	detail::ES_provider::es_server = ip;
-	detail::ES_provider::es_port = std::to_string(port);
-	detail::ES_provider::instance_data = instance_data;
+	detail::ES_provider::set_server(ip);
+	detail::ES_provider::set_port(port);
+	detail::ES_provider::set_instance_data( instance_data);
 }
 
 /// We'll set this up to handle other kinds of notification handlers.
