@@ -67,7 +67,6 @@ void send_annotation(const std::string& index,
   ss << fmt::format("\"{}\" : \"{}\"", "title", title) << ",";
   ss << fmt::format("\"{}\" : \"{}\"", "text", text) << ",";
   ss << fmt::format("\"{}\" : \"{}\"", "tags", tags) ;
-  std::cout << ss.str() << std::endl;
   detail::ES_provider esp;
   esp.post_message(index, "events", ss.str());
 }
