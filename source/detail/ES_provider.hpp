@@ -16,6 +16,7 @@ namespace detail {
 /// Provides access to an elasticsearch instance, and the
 /// configuration information for it.
 ///
+/// Not built for concurrent use.
 class ES_provider
 {
   public:
@@ -24,9 +25,9 @@ class ES_provider
 	ES_provider();
 	void post_message(std::string index, std::string type, std::string json);
 
-    static std::string es_server;
-    static std::string es_port;
-    static es_data_t   instance_data;
+    static void set_server(std::string server){m_server=server;}
+    static void set_port(int port){m_port = std::to_string(port);}
+    static void set_instance_data(const es_data_t& instance_data);
 
   private:
 	void process_response();
@@ -34,8 +35,10 @@ class ES_provider
 	boost::asio::io_service m_io_service;
 	boost::asio::ip::tcp::resolver m_resolver;
 	boost::asio::ip::tcp::socket m_socket;
-	std::string m_server;
-	std::string m_port;
+
+    static std::string m_server;
+    static std::string m_port;
+    static std::string m_instance_data;
 
 };
 }

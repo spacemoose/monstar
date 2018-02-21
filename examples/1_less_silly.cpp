@@ -108,13 +108,13 @@ monstar::notification_handler setup_monitoring(int period)
 int main()
 {
 
+	int period = 1;
+	auto nh = setup_monitoring(period);
 	monstar::send_annotation("annotations",
 	                         "less silly",
 	                         "Started a less silly example, this is the text field",
 	                         "dummy_tag,dt2");
-	int period = 1;
 	/// @todo exception handling.
-	auto nh = setup_monitoring(period);
 	monstar::set_notification_handler(nh);
 
 	/// joe runs a quick task alone:
