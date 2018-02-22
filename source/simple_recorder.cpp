@@ -1,14 +1,25 @@
 #include "simple_recorder.hpp"
 #include "detail/graphite_provider.hpp"
 #include "epoch.hpp"
+#include <iostream>
 
 namespace monstar {
 
 /// a single recorder is used to record a single value.
 simple_recorder::simple_recorder(std::string metric_name)
   : m_metric_path(detail::graphite_provider::get_prefix() + "." + metric_name)
-  , m_provider(std::make_unique<detail::graphite_provider>())
 {
+	try {
+		m_provider = std::make_unique<detail::graphite_provider>();
+	} catch (std::runtime_error& e) {
+		std::cerr
+		  << "An exception was caught while trying to create a graphite_provider \n"
+		     " in Monstar::simple_recorder.  The recorder will be disabled.  The exception \n"
+		     " text was: "
+		  << e.what();
+		m_provider.reset();
+	}
+
 }
 
 simple_recorder::simple_recorder(const simple_recorder& gr)
@@ -25,8 +36,10 @@ void simple_recorder::operator()(double val) { this->operator()(epoch::now(), va
 /// recorded with an identical timestamp.
 void simple_recorder::operator()(int secs_since_epoch, double val)
 {
-	m_msg.str("");
-	m_msg << m_metric_path << " " << val << " " << secs_since_epoch << "\n";
-	(*m_provider)(m_msg.str());
+	if (m_provider) {
+		m_msg.str("");
+		m_msg << m_metric_path << " " << val << " " << secs_since_epoch << "\n";
+		(*m_provider)(m_msg.str());
+	}
 }
 }
