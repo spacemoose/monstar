@@ -46,7 +46,6 @@ void ES_provider::set_instance_data(const es_data_t& data)
 void ES_provider::post_message(std::string index, std::string type, std::string message)
 {
 
-	std::cout << "instd: " << m_instance_data << std::endl;
 	message += m_instance_data;
 	thread_local std::stringstream ss;
 	/// @todo  make a constant header.
