@@ -47,9 +47,9 @@ void notify(const notification& note)
 	if (note_handler) {
 		note_handler->add(note);
 	} else {
-		assert(false);
-		std::cerr << "Called monstar::notify() before initializing the api -- ignoring."
-		          << std::endl;
+		// assert(false);
+		// std::cerr << "Called monstar::notify() before initializing the api -- ignoring.\n"
+		//           << std::endl;
 	}
 }
 
