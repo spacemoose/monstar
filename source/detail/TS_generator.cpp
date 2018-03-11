@@ -36,10 +36,9 @@ std::ostream& operator<<(std::ostream& os, const data_t& data)
 /// One must consider the following boundary cases to ensure corrct behavior:
 void TS_generator::process_notification(notification& note)
 {
-	// @todo resolve this:
-	assert(not m_finished); ///< This would certainly indicate a problem.
+  // apparently this is valid?  Consider and remove the warning if so.
 	if (m_finished) {
-		/// Why are we getting an update to a finished notification?
+	    /// This generally indicates something fishy going on:
 		std::cerr << "\nMONSTAR WARNING:  updating a finished notification"
 		          << "\n  timestamp: " << m_last_timestamp << " :: " << note.get_timestamp()
 		          << "\n  id:        " << m_id << " :: " << to_string(note.get_identifier())
@@ -52,6 +51,7 @@ void TS_generator::process_notification(notification& note)
 	m_cur_state = note.get_state();
 	m_finished = note.finished();
 }
+
 
 /// This updates the timings.  It might be called durings a process_notification call or prior
 /// to the TS_processor sending notifications.
@@ -97,5 +97,6 @@ void TS_generator::send_TS_data(ES_provider& ep)
 	ss << "\"status\" : \"" << m_cur_state << "\"";
 	ep.post_message(m_es_index, m_es_type, ss.str());
 }
+
 }
 }
