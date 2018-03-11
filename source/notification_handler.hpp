@@ -25,6 +25,7 @@ namespace detail{
 class notification_handler
 {
   public:
+
 	/// This must be called before any call to notify, and after
 	/// configure_* methods.  It initializes the timeseries processor
 	/// which receives notification and sends timeseries data to
@@ -43,4 +44,5 @@ class notification_handler
 	std::thread m_thread;
 	bool m_in_destructor{false};
 };
+
 }
