@@ -1,60 +1,53 @@
 #include "ES_provider.hpp"
+#include "configuration.hpp"
 
 #include <iostream>
+#include <sstream>
 
 #define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
 namespace monstar {
-
-/// If it's in the detail namespace, it's an implementation detail,
-/// not part of the api, and espcially prone to change.
 namespace detail {
 
-std::string ES_provider::m_server{"127.0.0.1"};
-std::string ES_provider::m_port{"9200"};
-std::string ES_provider::m_instance_data;
-
+/// We use an optional socket so we only get a single error message,
+/// and only if the service was configured but is unavailabe.
 ES_provider::ES_provider()
-  : m_resolver(m_io_service)
-  , m_socket(m_io_service)
 {
 	try {
-		boost::asio::ip::tcp::resolver::query query(m_server, m_port);
-		auto endpoint = *m_resolver.resolve(query);
-		m_socket.connect(endpoint);
-	} catch (std::exception& e) {
-		throw std::runtime_error(
-		  "Couldn't establish a socket conection to an elasticsearch server, with port " +
-		  m_port + " and ip " + m_server + ".   The text was: \n<" + e.what() + ">\n");
+		auto& ci = configuration::instance();
+		auto es = connection_type::elastic_search;
+		m_socket = ci.get_socket(es);
+		if (m_socket) {
+			m_instance_data = ci.get_instance_data(es);
+			std::stringstream ss;
+			ss << "Host: " + ci.get_server(es) + ":" + ci.get_port(es) + "\r\n"
+			   << "User-Agent: C/1.0\r\n"
+			   << "Accept: */*\r\n"
+			   << "Content-Type: application/json\r\n"
+			   << "Content-Length: ";
+			m_const_header_part = ss.str();
+		}
+	}
+	catch (std::exception& e) {
+		std::cerr << "Exception handled while trying to connect to the elasticsearch server.  "
+		             "Elasticsearch metrics are now disabled.The exception text was : \n "
+		          << e.what() << std::endl;
+		m_socket = std::nullopt;
 	}
 }
 
-/// Formats instance data to be inserted into a message.  prepends a
-/// comma, so it assumes a non empty message, and that the instnace
-/// data is getting added to the end.j
-void ES_provider::set_instance_data(const es_data_t& data)
-{
-	std::stringstream ss;
-	for (auto& p : data) {
-		ss << fmt::format(",\"{}\" : \"{}\"", p.first, p.second);
-	};
-	m_instance_data = ss.str();
-}
-
 /// @todo batch processing.
-void ES_provider::post_message(std::string index, std::string type, std::string message)
+void ES_provider::post_message(const std::string& index,
+                               const std::string& type,
+                               std::string message)
 {
+	if (not m_socket) return;
 
 	message += m_instance_data;
 	thread_local std::stringstream ss;
-	/// @todo  make a constant header.
 	ss << "POST /" << index << "/" << type << " HTTP/1.1 \r\n"
-	   << "Host: " + m_server + ":" + m_port + "\r\n"
-	   << "User-Agent: C/1.0\r\n"
-	   << "Accept: */*\r\n"
-	   << "Content-Type: application/json\r\n"
-	   << "Content-Length: " << message.length() + 2 << "\r\n\r\n" // +2 for the {}
+	   << m_const_header_part << message.length() + 2 << "\r\n\r\n" // +2 for the {}
 	   << "{" << message << "}";
 	boost::asio::streambuf request;
 	std::ostream rstream(&request);
@@ -62,7 +55,7 @@ void ES_provider::post_message(std::string index, std::string type, std::string 
 
 	request_stream << ss.str();
 
-	boost::asio::write(m_socket, request);
+	boost::asio::write(m_socket.value(), request);
 	process_response();
 
 	ss.str(std::string());
@@ -71,9 +64,10 @@ void ES_provider::post_message(std::string index, std::string type, std::string 
 /// @todo real error handling
 void ES_provider::process_response()
 {
+	assert(m_socket);
+	if (not m_socket) return;
 	boost::asio::streambuf response;
-
-	boost::asio::read_until(m_socket, response, "\n");
+	boost::asio::read_until(m_socket.value(), response, "\n");
 	std::istream response_stream(&response);
 	std::string http_version;
 	response_stream >> http_version;

@@ -6,6 +6,7 @@ add_library(monstar SHARED
 )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(detail)
+add_subdirectory(tests)
 
 target_include_directories(monstar PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(monstar PROPERTIES PUBLIC_HEADER
