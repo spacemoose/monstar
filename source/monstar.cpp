@@ -1,18 +1,17 @@
-#include "detail/graphite_provider.hpp"
-#include "detail/ES_provider.hpp"
 #include "monstar.hpp"
+#include "detail/ES_provider.hpp"
+#include "detail/configuration.hpp"
+#include "epoch.hpp"
 #include "notification.hpp"
 #include "notification_handler.hpp"
-#include "epoch.hpp"
 
 #include <cassert>
-#include <iostream>
 #include <chrono>
 #include <iomanip>
+#include <iostream>
 
 #define FMT_HEADER_ONLY
 #include <fmt/format.h>
-
 
 namespace monstar {
 
@@ -23,17 +22,22 @@ namespace {
 monstar::notification_handler* note_handler{nullptr};
 } // anon ns.
 
+using namespace detail;
+
 void configure_graphite(std::string ip, int port, std::string prefix)
 {
-	detail::graphite_provider::set_server(ip, port);
-	detail::graphite_provider::set_prefix(prefix);
+    configuration::instance().configure_service(connection_type::graphite, ip, port, prefix);
 }
 
 void configure_elasticsearch(std::string ip, int port, const es_data_t& instance_data)
 {
-	detail::ES_provider::set_server(ip);
-	detail::ES_provider::set_port(port);
-	detail::ES_provider::set_instance_data( instance_data);
+	/// format the instance data for elasticsearch:
+	std::stringstream ss;
+	for (auto& p : instance_data) {
+		ss << fmt::format(",\"{}\" : \"{}\"", p.first, p.second);
+	};
+	configuration::instance().configure_service(
+	  connection_type::elastic_search, ip, port, ss.str());
 }
 
 /// We'll set this up to handle other kinds of notification handlers.
@@ -46,10 +50,6 @@ void notify(const notification& note)
 {
 	if (note_handler) {
 		note_handler->add(note);
-	} else {
-		// assert(false);
-		// std::cerr << "Called monstar::notify() before initializing the api -- ignoring.\n"
-		//           << std::endl;
 	}
 }
 
@@ -58,17 +58,18 @@ void send_annotation(const std::string& index,
                      const std::string& text,
                      const std::string& tags)
 {
-  using sc = std::chrono::system_clock;
-  auto tm = sc::to_time_t(sc::now());
+	using sc = std::chrono::system_clock;
+	auto tm = sc::to_time_t(sc::now());
 
+	std::stringstream ss;
+	ss << "\"@timestamp\" : \"" << std::put_time(std::localtime(&tm), "%Y-%m-%dT%X%z")
+	   << "\",";
+	ss << fmt::format("\"{}\" : \"{}\"", "title", title) << ",";
+	ss << fmt::format("\"{}\" : \"{}\"", "text", text) << ",";
+	ss << fmt::format("\"{}\" : \"{}\"", "tags", tags);
 
-  std::stringstream ss;
-  ss << "\"@timestamp\" : \"" << std::put_time(std::localtime(&tm), "%Y-%m-%dT%X%z") << "\",";
-  ss << fmt::format("\"{}\" : \"{}\"", "title", title) << ",";
-  ss << fmt::format("\"{}\" : \"{}\"", "text", text) << ",";
-  ss << fmt::format("\"{}\" : \"{}\"", "tags", tags) ;
-  detail::ES_provider esp;
-  esp.post_message(index, "events", ss.str());
+	detail::ES_provider esp;
+	esp.post_message(index, "events", ss.str());
 }
 
 } // ns monstar
