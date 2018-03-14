@@ -39,7 +39,7 @@ void TS_generator::process_notification(notification& note)
   // apparently this is valid?  Consider and remove the warning if so.
 	if (m_finished) {
 	    /// This generally indicates something fishy going on:
-		std::cerr << "\nMONSTAR WARNING:  updating a finished notification"
+		std::cerr << "\nMONSTAR LIB (warning):  updating a finished notification"
 		          << "\n  timestamp: " << m_last_timestamp << " :: " << note.get_timestamp()
 		          << "\n  id:        " << m_id << " :: " << to_string(note.get_identifier())
 		          << "\n  state:     " << m_cur_state << " :: " << note.get_state()
