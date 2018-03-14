@@ -1,10 +1,15 @@
 #pragma once
+
 #include <boost/asio.hpp>
 #include <memory>
 #include <sstream>
 #include <string>
 
 namespace monstar {
+
+namespace detail {
+class tcp_service;
+}
 
 /// For storing some numeric information (only to Graphite currently),
 /// at the current timestamp.
@@ -24,9 +29,8 @@ class simple_recorder
 	void operator()(int secs_since_epoch, double val);
 
   private:
-	std::optional<boost::asio::ip::tcp::socket> m_socket;
-	std::stringstream m_msg;
 	std::string m_prefix;
-
+	std::optional<std::unique_ptr<detail::tcp_service> > m_service;
+	std::stringstream m_msg;
 };
 }

@@ -15,6 +15,7 @@ void bad_elasticsearch()
 void bad_graphite() { monstar::configure_graphite("silly.path", 2003, "foo.test"); }
 
 void good_graphite() { monstar::configure_graphite("127.0.0.1", 2003, "foo.test"); }
+
 void good_elasticsearch()
 {
 	monstar::configure_elasticsearch("127.0.0.1", 9200, {{"environmnent", "test"}});
@@ -64,11 +65,14 @@ void both_bad()
 }
 
 
-
+using namespace std;
 
 int main() {
-  good_graphite();
-  bad_elasticsearch();
+  cout << "connect to graphite" << std::endl;
+  bad_graphite();
+  cout << "connect to ES" << std::endl;
+//  bad_elasticsearch();
+  cout << "start the handler" << std::endl;
   start_nh(1);
   use_monstar();
 }

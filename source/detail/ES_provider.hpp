@@ -1,8 +1,7 @@
 #pragma once
-
-
-#include <optional>
+#include "tcp_service.hpp"
 #include <boost/asio.hpp>
+#include <optional>
 #include <string>
 
 namespace monstar {
@@ -28,11 +27,11 @@ class ES_provider
 	/// post, e.g. 'jobs' & 'job'
 	/// @todo the index and type should be part of the provider?
 	ES_provider();
-	void post_message(const std::string& index, const std::string& type,  std::string message);
+	void post_message(const std::string& index, const std::string& type, std::string message);
 
   private:
 	void process_response();
-	std::optional<boost::asio::ip::tcp::socket> m_socket;
+	std::optional<std::unique_ptr<tcp_service>> m_service;
 	std::string m_instance_data;
 	std::string m_header;
 	std::string m_const_header_part;
