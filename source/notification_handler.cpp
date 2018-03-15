@@ -1,14 +1,14 @@
 #include "notification_handler.hpp"
 #include "detail/TS_processor.hpp"
 
-namespace monstar{
+namespace monstar {
 
 notification_handler::notification_handler(){};
 
 /// This should only be called after all notifications are done.
 notification_handler::~notification_handler()
 {
-	m_in_destructor = true;
+	m_ready_to_join = true;
 	m_thread.join();
 }
 
@@ -23,32 +23,35 @@ void notification_handler::start(int period)
 /// notification handler's destructor.  Otherwise difficulties arise.
 void notification_handler::processing_loop()
 {
-	while (not m_in_destructor) {
-		m_ts_processor->process();
-		/// currently the ts_processor manages the period, but maybe I
-		/// should change that.
+	while (not m_ready_to_join) {
+		try {
+			m_ts_processor->process();
+		} catch (std::runtime_error& e) {
+			m_ready_to_join = true;
+			std::cerr << "MONSTAR LIB: An exception was handled in the notification handler.  "
+			             "Time-serializetion will be disabled.  The exception text was:\n"
+			          << e.what();
+		}
 	}
 }
 
-notification_handler::notification_handler(notification_handler&& nh) noexcept :
-  m_ts_processor(std::move(nh.m_ts_processor)),
-  m_thread(std::move(nh.m_thread)),
-  m_in_destructor(std::move(nh.m_in_destructor))
-{}
+notification_handler::notification_handler(notification_handler&& nh) noexcept
+  : m_ts_processor(std::move(nh.m_ts_processor))
+  , m_thread(std::move(nh.m_thread))
+  , m_ready_to_join(std::move(nh.m_ready_to_join))
+{
+}
 
-/// Having a nullptr for TS_processor is not considered an error.
-/// In the event of a failure we want the system to continue
-/// running unaffected (minus monitoring of course).
-/// the possiblity of a nullptr on ts_processor to allow disabling
-/// of messaging, either intentionally or because a connection
-/// problem occured , and we want do nothing.
+/// If  either:
 ///
-/// @todo handle/test not-so-fringe cases (must be thread safe):
-///   - server connection timeout.
+///   - the TS_processor is null
+///   - m_ready_to_join has been set (probably b/c an exception was thrown from 'process'
+///
+/// we just discard the notification object.  Otherwise we add it to
+/// the queue to be time-serialized.
 void notification_handler::add(const notification& note)
 {
-	assert(not m_in_destructor);
-	if (not m_ts_processor) {
+	if (not m_ts_processor || m_ready_to_join) {
 		return;
 	}
 	m_ts_processor->add_message(note);

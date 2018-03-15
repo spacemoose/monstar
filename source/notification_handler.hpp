@@ -42,7 +42,7 @@ class notification_handler
 	void processing_loop();
 	std::unique_ptr<detail::TS_processor> m_ts_processor;
 	std::thread m_thread;
-	bool m_in_destructor{false};
+	bool m_ready_to_join{false};
 };
 
 }
