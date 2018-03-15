@@ -3,7 +3,7 @@
 #include "tcp_service.hpp"
 
 #include <iostream>
-#include <optional>
+#include <boost/optional.hpp>
 #include <utility>
 
 namespace monstar {
@@ -11,7 +11,7 @@ namespace detail {
 
 enum class connection_type { graphite = 0, elastic_search };
 
-using opt_svc = std::optional<std::unique_ptr<tcp_service>>;
+using opt_svc = boost::optional<std::unique_ptr<tcp_service>>;
 
 inline std::ostream& operator<<(std::ostream& ostr, connection_type ct)
 {
@@ -56,7 +56,7 @@ class configuration
 {
 
   public:
-	std::optional<svc_config> get_config(connection_type ct)
+	boost::optional<svc_config> get_config(connection_type ct)
 	{
 		return m_services[static_cast<int>(ct)];
 	}
@@ -89,7 +89,7 @@ class configuration
 				}
 			}
 		}
-		return std::nullopt;
+		return boost::none;
 	}
 	static configuration& instance()
 	{
@@ -113,7 +113,7 @@ class configuration
 	}
 
   private:
-	std::array<std::optional<svc_config>, 2> m_services;
+	std::array<boost::optional<svc_config>, 2> m_services;
 };
 }
 }

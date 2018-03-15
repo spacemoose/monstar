@@ -44,7 +44,7 @@ void ES_provider::post_message(const std::string& index,
 		m_service.value()->write(ss.str());
 		m_service.value()->check_response();
 	} catch (std::runtime_error& e) {
-		m_service = std::nullopt;
+		m_service = boost::none;
 		std::cerr << "MONSTAR LIB: An exception was handled while trying to post " << type
 		          << "data to the Elasticsearch index " << index << " configured with "
 		          << configuration::instance().get_config(connection_type::elastic_search).value()

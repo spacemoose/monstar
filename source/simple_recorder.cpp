@@ -4,7 +4,7 @@
 #include "epoch.hpp"
 #include <boost/asio.hpp>
 #include <iostream>
-#include <optional>
+#include <boost/optional.hpp>
 
 namespace monstar {
 
@@ -19,10 +19,10 @@ using namespace detail;
 
 /// Because of the wierd behavior in gcc 7.2, we have to take the
 /// optional<uptr> and pack it into an optional<special_unique>
-std::optional<special_unique> repack(std::optional<std::unique_ptr<tcp_service>>& old)
+boost::optional<special_unique> repack(boost::optional<std::unique_ptr<tcp_service>>& old)
 {
 	if (not old) {
-		return std::nullopt;
+		return boost::none;
 	}
 	std::unique_ptr<detail::tcp_service, detail::tcps_deleter> newp;
 	newp.reset(old.value().release());
@@ -67,7 +67,7 @@ void simple_recorder::operator()(int secs_since_epoch, double val)
 			          << m_service.value()->get_server()
 			          << ".  The metric has been disabled.  The error message was: "
 			          << e.what() << std::endl;
-			m_service = std::nullopt;
+			m_service = boost::none;
 			configuration::instance().disable_service(connection_type::graphite);
 		}
 	}

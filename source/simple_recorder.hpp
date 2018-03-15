@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/optional.hpp>
 #include <boost/asio.hpp>
 #include <memory>
 #include <sstream>
@@ -35,7 +36,7 @@ class simple_recorder
 
   private:
 	std::string m_prefix;
-	std::optional<special_unique> m_service;
+	boost::optional<special_unique> m_service;
 	std::stringstream m_msg;
 };
 }
