@@ -1,7 +1,7 @@
 #pragma once
 #include "tcp_service.hpp"
+#include <boost/optional.hpp>
 #include <boost/asio.hpp>
-#include <optional>
 #include <string>
 
 namespace monstar {
@@ -31,7 +31,7 @@ class ES_provider
 
   private:
 	void process_response();
-	std::optional<std::unique_ptr<tcp_service>> m_service;
+	boost::optional<std::unique_ptr<tcp_service>> m_service;
 	std::string m_instance_data;
 	std::string m_header;
 	std::string m_const_header_part;

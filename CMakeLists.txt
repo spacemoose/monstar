@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} --std=c++17")
 project(monstar)
 
-
 enable_testing()
 
 add_definitions(-Wall)
@@ -16,7 +15,7 @@ add_subdirectory(examples)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A library for monitoring C++ applications in Grafana")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "11")
+set(CPACK_PACKAGE_VERSION_PATCH "12")
 set(CPACK_RPM_PACKAGE_RELEASE 1)
 set(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 set(CPACK_GENERATOR "RPM")
