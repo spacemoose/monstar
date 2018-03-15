@@ -8,15 +8,35 @@
 
 namespace monstar {
 
+/// For reasons I don't understand, gcc 7.2 insists on constructing a
+/// default deleter for simple_recorder, even though I've defined
+/// one.  This is a workaround for that.
+namespace detail {
+void tcps_deleter::operator()(tcp_service* p) { delete p; }
+}
+
 using namespace detail;
-using opt_svc = std::optional<detail::tcp_service>;
+
+/// Because of the wierd behavior in gcc 7.2, we have to take the
+/// optional<uptr> and pack it into an optional<special_unique>
+std::optional<special_unique> repack(std::optional<std::unique_ptr<tcp_service>>& old)
+{
+	if (not old) {
+		return std::nullopt;
+	}
+	std::unique_ptr<detail::tcp_service, detail::tcps_deleter> newp;
+	newp.reset(old.value().release());
+	return std::move(newp);
+}
 
 /// The graphite provider is optional, so if graphite is never
 /// configured a simple_recorder call does nothing.
 simple_recorder::simple_recorder(std::string metric_name)
-  : m_prefix(metric_name),
-	m_service(configuration::instance().make_service(connection_type::graphite))
+  : m_prefix(metric_name)
 {
+	auto temp = configuration::instance().make_service(connection_type::graphite);
+	m_service = repack(temp);
+
 	if (m_service) {
 		m_prefix = m_service.value()->get_instance_data() + "." + m_prefix;
 	}
@@ -42,8 +62,8 @@ void simple_recorder::operator()(int secs_since_epoch, double val)
 		try {
 			m_service.value()->write(m_msg.str());
 		} catch (std::runtime_error& e) {
-			std::cerr << "MONSTAR LIB: An exception was handled while trying to record " << m_prefix
-			          << " to the graphite server at "
+			std::cerr << "MONSTAR LIB: An exception was handled while trying to record "
+			          << m_prefix << " to the graphite server at "
 			          << m_service.value()->get_server()
 			          << ".  The metric has been disabled.  The error message was: "
 			          << e.what() << std::endl;
@@ -54,5 +74,4 @@ void simple_recorder::operator()(int secs_since_epoch, double val)
 }
 
 simple_recorder::~simple_recorder(){};
-
 }
