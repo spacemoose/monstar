@@ -6,10 +6,8 @@
 namespace monstar {
 namespace detail {
 
-/// @todo I think the period handling, if we want to keep it at all,
-/// really belongs in the notification hadler.
-TS_processor::TS_processor( int period)
-  :  m_period(period)
+TS_processor::TS_processor(int period)
+  : m_period(period)
   , m_proc_time_recorder("monstar.queue.proc_time")
   , m_queue_size_recorder("monstar.queue.size")
 {
@@ -26,11 +24,32 @@ void TS_processor::process()
 	process_notifications(num_notifications);
 	send_TS_data();
 	cull();
+	using namespace std::chrono_literals;
+	std::this_thread::sleep_for(2s);
 	m_queue_size_recorder(num_notifications);
 	std::chrono::duration<double, std::milli> time_taken =
 	  sc::system_clock::now() - start_time;
 	m_proc_time_recorder(time_taken.count());
+	check_performance(time_taken);
 	std::this_thread::sleep_for(m_period - time_taken);
+}
+
+/// This throws a runtime_error in the event that we are taking too
+/// long to process the messages, allowing the notification handler to
+/// go into 'do nothing' mode.
+void TS_processor::check_performance(
+  const std::chrono::duration<double, std::milli> time_taken) const
+{
+	static int consecutive_overtime_count = 0;
+	if (time_taken > m_period) {
+		++consecutive_overtime_count;
+		if (consecutive_overtime_count > 2) {
+			throw std::runtime_error(
+			  "MONSTAR-LIB : the performance check on the TS_processor failed");
+		}
+	} else {
+		consecutive_overtime_count = 0;
+	}
 }
 
 void TS_processor::send_TS_data()
@@ -41,9 +60,6 @@ void TS_processor::send_TS_data()
 }
 
 // Remove any finished generators.
-//
-///@todo is this thread safe?  Could I have gotten a finished notification
-// before sending?
 void TS_processor::cull()
 {
 	std::map<msg_id_t, TS_generator> foo;
