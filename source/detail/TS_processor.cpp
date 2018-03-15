@@ -24,8 +24,6 @@ void TS_processor::process()
 	process_notifications(num_notifications);
 	send_TS_data();
 	cull();
-	using namespace std::chrono_literals;
-	std::this_thread::sleep_for(2s);
 	m_queue_size_recorder(num_notifications);
 	std::chrono::duration<double, std::milli> time_taken =
 	  sc::system_clock::now() - start_time;
