@@ -31,9 +31,11 @@ int main()
 
 	/// joe runs a quick task alone:
 	fake_it("joe", 1, 1, 1);
+
 	/// same with mary:
 	fake_it("mary", 1, 1, 1);
 
+	std::cout << "2" << std::endl;
 	/// joe and mary run together:
 	std::vector<std::thread> threads;
 	threads.emplace_back(fake_it, "joe", 1, 1, 1);
@@ -42,6 +44,7 @@ int main()
 		t.join();
 	}
 
+	std::cout << "many" << std::endl;
 	/// Chaos ensues:
 	threads.clear();
 	threads.emplace_back(fake_it, "joe", 1, 2, 1);
