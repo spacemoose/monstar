@@ -61,7 +61,7 @@ class TaskMonitor
   private:
 	monstar::msg_id_t make_id()
 	{
-		auto id = boost::uuids::random_generator();
+		auto id = boost::uuids::random_generator()();
 		monstar::msg_id_t retval;
 		memcpy(&retval, &id, 16);
 		return retval;
