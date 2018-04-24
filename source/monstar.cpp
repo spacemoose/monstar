@@ -4,14 +4,13 @@
 #include "epoch.hpp"
 #include "notification.hpp"
 #include "notification_handler.hpp"
+#include "detail/logging.hpp"
 
 #include <cassert>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
 
-#define FMT_HEADER_ONLY
-#include <fmt/format.h>
 
 namespace monstar {
 
@@ -71,5 +70,6 @@ void send_annotation(const std::string& index,
 	detail::ES_provider esp;
 	esp.post_message(index, "events", ss.str());
 }
+
 
 } // ns monstar

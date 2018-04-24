@@ -27,10 +27,11 @@ void notification_handler::processing_loop()
 		try {
 			m_ts_processor->process();
 		} catch (std::runtime_error& e) {
-			m_ready_to_join = true;
 			std::cerr << "MONSTAR LIB: An exception was handled in the notification handler.  "
 			             "Time-serializetion will be disabled.  The exception text was:\n"
 			          << e.what();
+			m_ready_to_join = true;
+		    return;
 		}
 	}
 }

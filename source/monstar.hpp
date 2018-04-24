@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+
 namespace monstar {
 
 using es_data_t = std::map<std::string, std::string>;
@@ -33,7 +34,6 @@ void configure_elasticsearch(std::string ip, int port, const es_data_t& instance
 ///    notifcations.
 void set_notification_handler(notification_handler& nh);
 
-/// Add a notification to the notification handler.
 void notify(const notification& msg);
 
 /// Send an annotation event to elasticsearch.  Uses now as the timestamp.

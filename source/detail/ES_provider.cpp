@@ -1,11 +1,10 @@
 #include "ES_provider.hpp"
 #include "configuration.hpp"
+#include "logging.hpp"
 
 #include <iostream>
 #include <sstream>
 
-#define FMT_HEADER_ONLY
-#include <fmt/format.h>
 
 namespace monstar {
 namespace detail {
@@ -18,8 +17,8 @@ ES_provider::ES_provider()
 	if (m_service) {
 		m_instance_data = m_service.value()->get_instance_data();
 		std::stringstream ss;
-		ss << "Host: " + m_service.value()->get_server() + ":" + m_service.value()->get_port() +
-		        "\r\n"
+		ss << "Host: " + m_service.value()->get_server() + ":" +
+		        m_service.value()->get_port() + "\r\n"
 		   << "User-Agent: C/1.0\r\n"
 		   << "Accept: */*\r\n"
 		   << "Content-Type: application/json\r\n"
@@ -45,14 +44,18 @@ void ES_provider::post_message(const std::string& index,
 		m_service.value()->check_response();
 	} catch (std::runtime_error& e) {
 		m_service = boost::none;
-		std::cerr << "MONSTAR LIB: An exception was handled while trying to post " << type
-		          << "data to the Elasticsearch index " << index << " configured with "
-		          << configuration::instance().get_config(connection_type::elastic_search).value()
-		          << ".  The metric has been disabled.  The exception text was: \n"
-		          << e.what() << std::endl;
+		auto foo =
+		  configuration::instance().get_config(connection_type::elastic_search).value();
+		logger()->error("MONSTAR LIB: An exception was handled while trying to post {} data "
+		                "to the Elasticsearch index {}  configured with {}.  The metric  has "
+		                "been disabled.  The exception text was: \n{}\nThe message attempt was:{}",
+		                type,
+		                index,
+		                foo,
+		                e.what(),
+						ss.str());
 	}
 	ss.str(std::string());
 }
-
 }
 }

@@ -1,12 +1,23 @@
 #include "TS_generator.hpp"
 #include "ES_provider.hpp"
-#include "notification.hpp"
+#include "configuration.hpp"
 #include "epoch.hpp"
 #include "io_ops.hpp"
+
+
+#include "logging.hpp"
+#include "notification.hpp"
+
 #include <iostream>
 
-#define FMT_HEADER_ONLY
-#include <fmt/format.h>
+
+template<typename ostr_t>
+ostr_t& operator<<(ostr_t& ostr, const std::map<std::string, std::string>& data)
+{
+	for (auto& pair : data)
+		ostr << "  " << pair.first << " :: " << pair.second << "\n";
+	return ostr;
+}
 
 namespace monstar {
 namespace detail {
@@ -24,34 +35,36 @@ TS_generator::TS_generator(const notification& note)
 {
 }
 
-std::ostream& operator<<(std::ostream& os, const data_t& data)
-{
-	for (auto& pair : data)
-		os << "  " << pair.first << " :: " << pair.second << "\n";
-	return os;
-}
+
 
 /// This takes data from a note, and performs all calculations so that the
 /// updateTimings method (which is called before serializing data) produces correct results.
 /// One must consider the following boundary cases to ensure corrct behavior:
 void TS_generator::process_notification(notification& note)
 {
-  // apparently this is valid?  Consider and remove the warning if so.
+	// apparently this is valid?  Consider and remove the warning if so.
 	if (m_finished) {
-	    /// This generally indicates something fishy going on:
-		std::cerr << "\nMONSTAR LIB (warning):  updating a finished notification"
-		          << "\n  timestamp: " << m_last_timestamp << " :: " << note.get_timestamp()
-		          << "\n  id:        " << m_id << " :: " << to_string(note.get_identifier())
-		          << "\n  state:     " << m_cur_state << " :: " << note.get_state()
-		          << "\n  data:      \n"
-		          << m_fixed_data << "\n  note data:  \n"
-		          << note.get_data() << std::endl;
+		/// This generally indicates something fishy going on:
+		logger()->warn("\nMONSTAR LIB (warning):  updating a finished notification "
+		               "\n  timestamp: {} ::  {} "
+		               "\n  id:        {} ::  {} "
+		               "\n  state:     {} ::  {} "
+		               "\n  data:\n {}  "
+		               "\n  note data: ",
+		               m_last_timestamp,
+		               note.get_timestamp(),
+		               m_id,
+		               to_string(note.get_identifier()),
+		               m_cur_state,
+		               note.get_state(),
+		               m_fixed_data);
+//		               note.get_data());
 	}
+
 	update_timings(note.get_timestamp());
 	m_cur_state = note.get_state();
 	m_finished = note.finished();
 }
-
 
 /// This updates the timings.  It might be called durings a process_notification call or prior
 /// to the TS_processor sending notifications.
@@ -97,6 +110,5 @@ void TS_generator::send_TS_data(ES_provider& ep)
 	ss << "\"status\" : \"" << m_cur_state << "\"";
 	ep.post_message(m_es_index, m_es_type, ss.str());
 }
-
 }
 }
