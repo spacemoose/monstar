@@ -25,7 +25,6 @@ A C++ library for MONitoring an application and sending data to grafana to gener
 
    More examples to come.
 
-
 ** Warning:
 
    While I hope this is already useful for people, the project is not

@@ -1,10 +1,12 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories (${PROJECT_SOURCE_DIR}/external_deps/spdlog/include/spdlog)
 add_library(monstar SHARED
   ${CMAKE_CURRENT_LIST_DIR}/monstar.cpp
   ${CMAKE_CURRENT_LIST_DIR}/notification.cpp
   ${CMAKE_CURRENT_LIST_DIR}/notification_handler.cpp
   ${CMAKE_CURRENT_LIST_DIR}/simple_recorder.cpp
 )
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_subdirectory(detail)
 add_subdirectory(tests)
 

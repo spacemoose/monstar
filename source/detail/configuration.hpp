@@ -2,8 +2,9 @@
 
 #include "tcp_service.hpp"
 
-#include <iostream>
 #include <boost/optional.hpp>
+#include <iostream>
+#include <memory>
 #include <utility>
 
 namespace monstar {
@@ -13,7 +14,8 @@ enum class connection_type { graphite = 0, elastic_search };
 
 using opt_svc = boost::optional<std::unique_ptr<tcp_service>>;
 
-inline std::ostream& operator<<(std::ostream& ostr, connection_type ct)
+template<typename OStream>
+OStream& operator<<(OStream& ostr, connection_type ct)
 {
 	switch (ct) {
 		case connection_type::graphite: ostr << "graphite"; break;
@@ -33,7 +35,8 @@ struct svc_config {
 	bool disabled{false};
 };
 
-inline std::ostream& operator<<(std::ostream& ostr, const svc_config& c)
+template<typename ostr_t>
+ostr_t& operator<<(ostr_t& ostr, const svc_config& c)
 {
 	ostr << c.server << ":" << c.port << ":{" << c.instance_data << "}";
 	return ostr;
@@ -51,15 +54,22 @@ inline std::ostream& operator<<(std::ostream& ostr, const svc_config& c)
 ///
 /// A singleton seemed like a reasonable approach here.
 ///
-/// @todo thread safe disable_service so timeouts can globally disable?
+/// @todo thread safe disable_service so timeouts can globally
+/// disable?
+///
+/// @todo configuration should be namespace level functions,
+/// and we can have a hidden services object.
 class configuration
 {
 
   public:
-	boost::optional<svc_config> get_config(connection_type ct)
+	static configuration& instance()
 	{
-		return m_services[static_cast<int>(ct)];
+		static configuration c;
+		return c;
 	}
+
+	boost::optional<svc_config> get_config(connection_type ct);
 
 	/// If the service has been configured (and isn't disabled) we try
 	/// to create the service object.
@@ -70,47 +80,12 @@ class configuration
 	/// instantiate a connection to a disabled service.  Concrete
 	/// service providers will want to handle timeouts and disable
 	/// their optional services.
-	opt_svc make_service(connection_type ct)
-	{
-		auto i = static_cast<int>(ct);
-		if (m_services[i]) {
-			auto& conf = m_services[i].value();
-			if (not conf.disabled) {
-				try {
-					auto t = std::make_unique<tcp_service>(
-					  conf.server, conf.port, conf.instance_data);
-					return std::move(t);
-				} catch (std::runtime_error& e) {
-					std::cerr << "MONSTAR-LIB:  An exception was handled trying to configure the "
-					          << ct << " service at " << conf << ".  " << ct
-					          << " based metrics are now disabled. \n "
-					          << "The exception text was:\n\t < " << e.what() << ">\n";
-					conf.disabled = true;
-				}
-			}
-		}
-		return boost::none;
-	}
-	static configuration& instance()
-	{
-		static configuration c;
-		return c;
-	}
-
-	void disable_service(connection_type ct)
-	{
-		auto i = static_cast<int>(ct);
-		assert(m_services[i]);
-		if (m_services[i]) m_services[i].value().disabled = true;
-	}
-
+	opt_svc make_service(connection_type ct);
+	void disable_service(connection_type ct);
 	void configure_service(connection_type ct,
 	                       std::string ip,
 	                       int port,
-	                       std::string instance_data)
-	{
-		m_services[static_cast<int>(ct)].emplace(ip, port, instance_data);
-	}
+	                       std::string instance_data);
 
   private:
 	std::array<boost::optional<svc_config>, 2> m_services;

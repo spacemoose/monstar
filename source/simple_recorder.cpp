@@ -52,7 +52,6 @@ void simple_recorder::operator()(double val)
 
 /// This is useful for creating fake data, or making sure a set of vals are
 /// recorded with an identical timestamp.
-/// @todo error handling
 void simple_recorder::operator()(int secs_since_epoch, double val)
 {
 	if (m_service) {

@@ -1,4 +1,4 @@
-#include "source/detail/configuration.hpp"
+#include "detail/configuration.hpp"
 #include "catch.hpp"
 #include "monstar.hpp"
 #include "notification.hpp"
@@ -56,10 +56,4 @@ TEST_CASE("Unconfigured Monstar", "[configuration]")
 	{
 		no_output_test([]() { monstar::scoped_timer st("some.metric"); });
 	}
-}
-
-/// What if elasticsearch is configured, but we aren't able to connect?
-TEST_CASE("NO Elasticsearch, no Graphite.")
-{
-
 }

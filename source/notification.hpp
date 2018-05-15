@@ -24,7 +24,6 @@ using data_t = std::map<std::string, std::string>;
 /// @todo optimizations:
 ///      - const_data and volatile_data
 ///      - move semantics
-/// @todo I think this should just be a struct.
 struct notification
 {
   public:
@@ -78,4 +77,6 @@ struct notification
 	std::string m_new_state;   ///< The current state of the entitity.
 	unsigned long m_timestamp; ///< The timestamp at which the state changed.
 };
+
+
 }
