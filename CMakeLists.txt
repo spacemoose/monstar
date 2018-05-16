@@ -9,15 +9,17 @@ add_definitions(-Wall)
 add_subdirectory(source)
 add_subdirectory(examples)
 
+
 #--------------
 # Packaging
 # the next two lines can be ditched when we can count on cmake >3.6
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A library for monitoring C++ applications in Grafana")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "13")
+set(CPACK_PACKAGE_VERSION_PATCH "14")
 set(CPACK_RPM_PACKAGE_RELEASE 1)
 set(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+
 set(CPACK_GENERATOR "RPM")
 set(CPACK_PACKAGE_NAME "monstar")
 set(CPACK_RPM_PACKAGE_LICENSE "LGPL-3.0")
@@ -25,7 +27,15 @@ set(CPACK_PACKAGE_CONTACT "Glen Stark")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/CPack.desc")
 set(CPACK_PACKAGING_INSTALL_PREFIX /usr/)
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${VERSION}-${CPACK_RPM_PACKAGE_RELEASE}.${CMAKE_SYSTEM_PROCESSOR}")
+
+set_target_properties(monstar PROPERTIES
+  VERSION ${VERSION}
+  SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}
+  DEBUG_POSTFIX d
+)
+
 include(CPack)
+
 
 # #---------------
 # # Documentation.

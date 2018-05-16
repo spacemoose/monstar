@@ -1,5 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories (${PROJECT_SOURCE_DIR}/external_deps/spdlog/include/spdlog)
+set(VERSION "${VERSION}" PARENT_SCOPE)
 add_library(monstar SHARED
   ${CMAKE_CURRENT_LIST_DIR}/monstar.cpp
   ${CMAKE_CURRENT_LIST_DIR}/notification.cpp
