@@ -12,7 +12,7 @@ namespace monstar {
 
 using es_data_t = std::map<std::string, std::string>;
 
-class notification;
+struct notification;
 class notification_handler;
 
 /// Configure the Graphite server access.
