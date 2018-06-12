@@ -11,7 +11,7 @@
 /// you want custom types.  Is that right?  Maybe make a pull request
 /// for that one.
 #include <fmt/ostream.h>
-#include <spdlog.h>
+#include <spdlog/spdlog.h>
 namespace monstar {
 namespace detail {
 

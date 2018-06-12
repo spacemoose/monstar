@@ -65,7 +65,7 @@ void send_annotation(const std::string& index,
 	ss << "\"@timestamp\" : \"" << std::put_time(std::localtime(&tm), "%Y-%m-%dT%X%z")
 	   << "\",";
 	ss << fmt::format("\"{}\" : \"{}\"", "title", title) << ",";
-	ss << fmt::format("\"{}\" : \"{}\"", "text", util::escape_quotes(text) << ",";
+	ss << fmt::format("\"{}\" : \"{}\"", "text", util::escape_quotes(text)) << ",";
 	ss << fmt::format("\"{}\" : \"{}\"", "tags", tags);
 
 	detail::ES_provider esp;
