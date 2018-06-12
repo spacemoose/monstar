@@ -4,12 +4,10 @@
 #include "epoch.hpp"
 #include "io_ops.hpp"
 
-
 #include "logging.hpp"
 #include "notification.hpp"
 
 #include <iostream>
-
 
 template<typename ostr_t>
 ostr_t& operator<<(ostr_t& ostr, const std::map<std::string, std::string>& data)
@@ -35,16 +33,13 @@ TS_generator::TS_generator(const notification& note)
 {
 }
 
-
-
-/// This takes data from a note, and performs all calculations so that the
-/// updateTimings method (which is called before serializing data) produces correct results.
-/// One must consider the following boundary cases to ensure corrct behavior:
+/// This takes data from a note, and performs all calculations so that
+/// the updateTimings method (which is called before serializing data)
+/// produces correct results.
 void TS_generator::process_notification(notification& note)
 {
-	// apparently this is valid?  Consider and remove the warning if so.
 	if (m_finished) {
-		/// This generally indicates something fishy going on:
+		/// This indicates something fishy going on:
 		logger()->warn("\nMONSTAR LIB (warning):  updating a finished notification "
 		               "\n  timestamp: {} ::  {} "
 		               "\n  id:        {} ::  {} "
@@ -58,7 +53,7 @@ void TS_generator::process_notification(notification& note)
 		               m_cur_state,
 		               note.get_state(),
 		               m_fixed_data);
-//		               note.get_data());
+		assert(false);
 	}
 
 	update_timings(note.get_timestamp());
@@ -66,8 +61,9 @@ void TS_generator::process_notification(notification& note)
 	m_finished = note.finished();
 }
 
-/// This updates the timings.  It might be called durings a process_notification call or prior
-/// to the TS_processor sending notifications.
+/// This updates the timings.  It might be called durings a
+/// process_notification call or prior to the TS_processor sending
+/// notifications.
 void TS_generator::update_timings(epoch::timestamp_t cur_timestamp)
 {
 	auto dt = cur_timestamp - m_last_timestamp;
@@ -89,9 +85,7 @@ void TS_generator::update_timings(epoch::timestamp_t cur_timestamp)
 	m_last_timestamp = cur_timestamp;
 }
 
-/// Send the timeseries data to monstar (elasticsearch).
-/// @todo is this the right index/type breakdown?  Maybe we want an index per machine?
-/// @todo maybe we want timestamp managed int the ts_processor?
+/// Send the timeseries data to elasticsearch.
 void TS_generator::send_TS_data(ES_provider& ep)
 {
 	auto cur_timestamp = epoch::now();

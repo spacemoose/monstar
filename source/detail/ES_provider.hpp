@@ -2,7 +2,6 @@
 #include "tcp_service.hpp"
 
 #include <boost/optional.hpp>
-#include <boost/asio.hpp>
 #include <string>
 
 namespace monstar {
@@ -16,11 +15,10 @@ namespace detail {
 ///
 /// Each ES_provider is assumed to run in a single thread.
 ///
-/// The concept here is that client code can just use and ES_provider,
+/// The concept here is that client code can just use an ES_provider,
 /// and if elasticsearch is not configured, or is disabled at some
 /// point, post_message calls wind up doing nothing.
 ///
-
 class ES_provider
 {
   public:

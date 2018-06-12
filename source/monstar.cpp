@@ -5,6 +5,7 @@
 #include "notification.hpp"
 #include "notification_handler.hpp"
 #include "detail/logging.hpp"
+#include "detail/util.hpp"
 
 #include <cassert>
 #include <chrono>
@@ -64,7 +65,7 @@ void send_annotation(const std::string& index,
 	ss << "\"@timestamp\" : \"" << std::put_time(std::localtime(&tm), "%Y-%m-%dT%X%z")
 	   << "\",";
 	ss << fmt::format("\"{}\" : \"{}\"", "title", title) << ",";
-	ss << fmt::format("\"{}\" : \"{}\"", "text", text) << ",";
+	ss << fmt::format("\"{}\" : \"{}\"", "text", util::escape_quotes(text) << ",";
 	ss << fmt::format("\"{}\" : \"{}\"", "tags", tags);
 
 	detail::ES_provider esp;

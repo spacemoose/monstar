@@ -3,8 +3,8 @@
 #include "detail/tcp_service.hpp"
 #include "epoch.hpp"
 #include <boost/asio.hpp>
-#include <iostream>
 #include <boost/optional.hpp>
+#include <iostream>
 
 namespace monstar {
 
