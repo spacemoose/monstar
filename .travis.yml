@@ -9,4 +9,8 @@ before_script:
   - cd build
   - cmake ..
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y libboost-asio-dev 
+  
 script: make && make test
