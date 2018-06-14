@@ -11,28 +11,31 @@ matrix:
         apt:
           update: true
           sources:
+            - sourceline: 'ppa:mhier/libboost-latest'
             - ubuntu-toolchain-r-test
           packages:
-            - g++-6 libboost-all-dev
+            - g++-6
+            - boost1.67
     - env: COMPILER=g++-6 BUILD=Release STANDARD=14
       compiler: gcc
       addons:
         apt:
           update: true
           sources:
+            - sourceline: 'ppa:mhier/libboost-latest'
             - ubuntu-toolchain-r-test
-
           packages:
-            - g++-6 libboost1.55--all-dev
+            - g++-6
+            - boost1.67
 
-before install:
-  - sudo add-apt-repository ppa:boost-latest/ppa
-  - sudo apt-get update
-  - sudo apt-cache search libboost
-  - sudo apt-get install libboost1.65-all-dev
+# before install:
+#   - sudo add-apt-repository ppa:csaba-kertesz/random
+#   - sudo apt-get update
+#   - sudo apt-cache search libboost
+#   - sudo apt-get install libboost1.67
 
 before_script:
-  - sudo apt-cache search libboost
+#  - sudo apt-cache search libboost
   - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then export CXX=${COMPILER}; fi
   - mkdir build
   - cd build
